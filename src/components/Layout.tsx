@@ -9,9 +9,9 @@ interface Props {
 class Layout extends Component<Props> {
   render() {
     return (
-      <div className="w-full h-screen overflow-auto flex flex-col">
+      <div className="w-full h-screen overflow-auto flex flex-col bg-slate-300 ">
         <Navbar />
-        <div className="h-full p-3">{this.props.children}</div>
+        <div className="h-full w-full py-3 px-3 flex  flex-col items-center ">{this.props.children}</div>
       </div>
     );
   }
