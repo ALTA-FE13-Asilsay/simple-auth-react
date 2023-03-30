@@ -18,8 +18,12 @@ class Card extends Component<Props> {
     */
 
     return (
-      <div className="flex flex-col items-center">
-        <img src={image} alt={`${username}'s picture`} className="rounded-full w-28 aspect-square" />
+      <div className="flex flex-col items-center bg-stone-100 rounded-t-full">
+        <img
+          src={image}
+          alt={`${username}'s picture`}
+          className="rounded-full w-28 aspect-square"
+        />
         <p className="font-bold tracking-wider">
           {first_name} {last_name}
         </p>

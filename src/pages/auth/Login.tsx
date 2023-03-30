@@ -20,7 +20,7 @@ class Login extends Component<PropsType, StateType> {
     this.state = {
       username: "",
       password: "",
-      loading: true,
+      loading: false,
     };
   }
   // constructor End here
@@ -47,10 +47,13 @@ class Login extends Component<PropsType, StateType> {
       // pie carane dicentrkan?
       <Layout>
         <form
-          className="flex flex-col items-center gap-4 "
+          className="flex flex-col items-center content-center gap-4 w-2/5 "
           onSubmit={(event) => this.handleSubmit(event)}
         >
-          <img src="/vite.svg" alt="image login" className="w-28 h-28" />
+          <img src="/vite.svg" alt="image login" className="w-20 h-20" />
+          <p className=" text-xl text-stone-900 font-bold tracking-wide mb-7">
+            Hello Again!
+          </p>
           <Input
             placeholder="Username"
             id="input-uname"
@@ -66,7 +69,12 @@ class Login extends Component<PropsType, StateType> {
               this.setState({ password: event.target.value })
             }
           />
-          <Button label="Login" id="button-login" />
+          <Button
+            label="Login"
+            id="button-login"
+            type="submit"
+            disabled={this.state.username === "" || this.state.password === ""}
+          />
         </form>
       </Layout>
     );

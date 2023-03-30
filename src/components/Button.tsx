@@ -9,7 +9,7 @@ class Button extends Component<Props> {
     return (
       <button
         className="bg-blue-900 text-white font-bold py-2 px-8 
-    rounded-full border border-white hover:bg-blue-700 active:bg-blue-800 "
+    rounded-full border border-white hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-900"
         {...this.props}
       >
         {this.props.label}

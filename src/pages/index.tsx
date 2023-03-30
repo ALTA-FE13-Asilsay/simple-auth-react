@@ -67,7 +67,9 @@ class Home extends Component<PropsType, StateType> {
   }
 
   fetchAlter() {
-    fetch("https://virtserver.swaggerhub.com/devanada/hells-kitchen/1.1.0/users")
+    fetch(
+      "https://virtserver.swaggerhub.com/devanada/hells-kitchen/1.1.0/users"
+    )
       .then((result) => result.json())
       .then((response) => {
         const { data } = response;
@@ -84,12 +86,23 @@ class Home extends Component<PropsType, StateType> {
   render() {
     return (
       <Layout>
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
+        <p className=" text-xl text-stone-900 font-bold tracking-wide mb-7">
+          Profiles:
+        </p>
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {this.state.loading ? (
             <Spinner />
           ) : (
             this.state.datas.map((data, idx) => {
-              return <Card key={data.id} first_name={data.first_name} last_name={data.last_name} username={data.username} image={data.image} />;
+              return (
+                <Card
+                  key={data.id}
+                  first_name={data.first_name}
+                  last_name={data.last_name}
+                  username={data.username}
+                  image={data.image}
+                />
+              );
             })
           )}
         </div>
