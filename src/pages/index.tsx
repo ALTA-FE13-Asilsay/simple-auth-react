@@ -86,25 +86,27 @@ class Home extends Component<PropsType, StateType> {
   render() {
     return (
       <Layout>
-        <p className=" text-xl text-stone-900 font-bold tracking-wide mb-7">
-          Profiles:
-        </p>
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-          {this.state.loading ? (
-            <Spinner />
-          ) : (
-            this.state.datas.map((data, idx) => {
-              return (
-                <Card
-                  key={data.id}
-                  first_name={data.first_name}
-                  last_name={data.last_name}
-                  username={data.username}
-                  image={data.image}
-                />
-              );
-            })
-          )}
+        <div className="flex flex-col items-center gap-4 w-[85%] w-lg-[80%] h-[90%] overflow-auto">
+          <p className=" text-xl text-slate-900 font-bold tracking-wider mb-5">
+            PROFILES:
+          </p>
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 w-full">
+            {this.state.loading ? (
+              <Spinner />
+            ) : (
+              this.state.datas.map((data, idx) => {
+                return (
+                  <Card
+                    key={data.id}
+                    first_name={data.first_name}
+                    last_name={data.last_name}
+                    username={data.username}
+                    image={data.image}
+                  />
+                );
+              })
+            )}
+          </div>
         </div>
       </Layout>
     );

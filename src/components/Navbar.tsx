@@ -5,18 +5,23 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 
+import { Link } from "react-router-dom";
 import { Menu, Transition } from "@headlessui/react";
 import { Component, Fragment } from "react";
 
-class Navbar extends Component {
+import withRouter, { NavigateParam } from "@/utils/navigation";
+
+class Navbar extends Component<NavigateParam> {
   render() {
     return (
-      <nav className="bg-stone-200 w-full h-14 flex items-center py-3 px-20 justify-between">
-        <p className="text-stone-900 font-semibold tracking-wider">Homepage</p>
+      <nav className="bg-slate-200 w-full h-14 flex items-center py-3 px-20 justify-between">
+        <Link className="text-slate-800 font-semibold tracking-wider" to="/">
+          Homepage
+        </Link>
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <Menu.Button className="inline-flex w-full justify-center rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75">
-              <FaChevronDown className="h-5 text-violet-200 hover:text-violet-100" />
+              <FaChevronDown className="h-5 text-slate-200 hover:text-slate-100" />
             </Menu.Button>
           </div>
           <Transition
@@ -34,8 +39,11 @@ class Navbar extends Component {
                   {({ active }) => (
                     <button
                       className={`${
-                        active ? "bg-violet-500 text-white" : "text-gray-900"
+                        active
+                          ? "bg-slate-500 text-slate-200"
+                          : "text-slate-900"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      onClick={() => this.props.navigate("/profile/testing")}
                     >
                       <FaUserCircle className="h-5 mr-2 w-5" />
                       Profile
@@ -48,8 +56,11 @@ class Navbar extends Component {
                   {({ active }) => (
                     <button
                       className={`${
-                        active ? "bg-violet-500 text-white" : "text-gray-900"
+                        active
+                          ? "bg-slate-500 text-slate-200"
+                          : "text-slate-900"
                       } group flex w-full items-center rounded-md px-2 py-2 text-sm`}
+                      onClick={() => this.props.navigate("/login")}
                     >
                       <FaSignInAlt className="h-5 mr-2 w-5" />
                       Login
@@ -65,4 +76,4 @@ class Navbar extends Component {
   }
 }
 
-export default Navbar;
+export default withRouter(Navbar);

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   image: string;
@@ -18,16 +19,19 @@ class Card extends Component<Props> {
     */
 
     return (
-      <div className="flex flex-col items-center bg-stone-100 rounded-t-full">
+      <div className="flex flex-col items-center border-2 border-slate-50 rounded-lg p-2">
         <img
           src={image}
           alt={`${username}'s picture`}
-          className="rounded-full w-28 aspect-square"
+          className="rounded-full w-20 aspect-square mb-3"
         />
-        <p className="font-bold tracking-wider">
+        <Link
+          className="font-semibold tracking-wide text-slate-900"
+          to={`profile/${username}`}
+        >
           {first_name} {last_name}
-        </p>
-        <p className="text-sm">{username}</p>
+        </Link>
+        <p className="text-sm text-slate-900">{username}</p>
       </div>
     );
   }

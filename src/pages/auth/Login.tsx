@@ -1,11 +1,13 @@
 import { Component, FormEvent } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import Layout from "@/components/Layout";
 import { Input } from "@/components/Input";
 import Button from "@/components/Button";
+import withRouter, { NavigateParam } from "@/utils/navigation";
 
-interface PropsType {}
+interface PropsType extends NavigateParam {}
 
 interface StateType {
   username: string;
@@ -36,6 +38,8 @@ class Login extends Component<PropsType, StateType> {
       .then((response) => {
         const { data } = response;
         console.log(data);
+        alert(data.message);
+        this.props.navigate("/");
       })
       .catch((error) => {
         alert(error.toString());
@@ -47,11 +51,11 @@ class Login extends Component<PropsType, StateType> {
       // pie carane dicentrkan?
       <Layout>
         <form
-          className="flex flex-col items-center content-center gap-4 w-2/5 "
+          className="flex flex-col items-center content-center gap-4 w-[70%] "
           onSubmit={(event) => this.handleSubmit(event)}
         >
           <img src="/vite.svg" alt="image login" className="w-20 h-20" />
-          <p className=" text-xl text-stone-900 font-bold tracking-wide mb-7">
+          <p className=" text-xl text-slate-900 font-bold tracking-wide mb-7">
             Hello Again!
           </p>
           <Input
@@ -69,8 +73,16 @@ class Login extends Component<PropsType, StateType> {
               this.setState({ password: event.target.value })
             }
           />
+
+          <p className="text-slate-900 text-sm mb-7">
+            Already have and account? Login{" "}
+            <Link className="font-semibold" to="/register">
+              here!
+            </Link>
+          </p>
+
           <Button
-            label="Login"
+            label="LOGIN"
             id="button-login"
             type="submit"
             disabled={this.state.username === "" || this.state.password === ""}
@@ -81,4 +93,4 @@ class Login extends Component<PropsType, StateType> {
   }
 }
 
-export default Login;
+export default withRouter(Login);

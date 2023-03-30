@@ -1,11 +1,12 @@
 import { Component, FormEvent } from "react";
 import axios from "axios";
 
+import withRouter, { NavigateParam } from "@/utils/navigation";
 import Layout from "@/components/Layout";
 import { Input } from "@/components/Input";
 import Button from "@/components/Button";
 
-interface PropsType {}
+interface PropsType extends NavigateParam {}
 
 interface StateType {
   username: string;
@@ -40,7 +41,9 @@ class Register extends Component<PropsType, StateType> {
       .post("register", body)
       .then((response) => {
         const { data } = response;
+        alert(data.message);
         console.log(data);
+        this.props.navigate(`/profile/testing`);
       })
       .catch((error) => {
         alert(error.toString());
@@ -51,11 +54,11 @@ class Register extends Component<PropsType, StateType> {
     return (
       <Layout>
         <form
-          className="flex flex-col items-center content-center gap-4 w-2/5 "
+          className="flex flex-col items-center content-center gap-4 w-[70%] "
           onSubmit={(event) => this.handleSubmit(event)}
         >
           <img src="/vite.svg" alt="image register" className="w-20 h-20" />
-          <p className=" text-xl text-stone-900 font-bold tracking-wide mb-7">
+          <p className=" text-xl text-slate-900 font-bold tracking-wide mb-7">
             Create your account
           </p>
           <div className="flex gap-4">
@@ -89,6 +92,7 @@ class Register extends Component<PropsType, StateType> {
               this.setState({ password: event.target.value })
             }
           />
+          <div className="mb-7" />
           <Button
             label="SIGN UP"
             id="button-register"
@@ -106,7 +110,7 @@ class Register extends Component<PropsType, StateType> {
   }
 }
 
-export default Register;
+export default withRouter(Register);
 
 // <Layout>
 //   <form className="flex flex-col items-center justify-center gap-4 ">
