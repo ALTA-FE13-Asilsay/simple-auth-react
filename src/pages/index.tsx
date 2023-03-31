@@ -1,116 +1,81 @@
-import { Component } from "react";
+import { FC, useState, useEffect } from "react";
 import axios from "axios";
 
-import Card from "@/components/Card";
 import { Spinner } from "@/components/Loading";
-
-import Layout from "@/components/Layout"; //use default import
 import { UserType } from "@/utils/types/user";
+import Layout from "@/components/Layout";
+import { useTitle } from "@/utils/hooks";
+import Card from "@/components/Card";
 
-interface PropsType {}
-
-interface StateType {
-  datas: UserType[];
-  loading: boolean;
-}
-
-class Home extends Component<PropsType, StateType> {
+const Home: FC = () => {
   // constructor start herea
-  constructor(props: PropsType) {
-    super(props);
-    this.state = {
-      // state: default value
-      datas: [],
-      loading: true,
-    };
-  }
-  // constructor End here
 
-  // side effect, berjalan saat refefres
-  componentDidMount(): void {
-    this.fetchData();
-    // this.fetchAlter();
-  }
+  const [datas, setDatas] = useState<UserType[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  useTitle("Homepage | User Management");
 
-  fetchData() {
-    // let temp: UserType[] = [];
-    // for (let i = 1; i <= 12; i++) {
-    //   const obj = {
-    //     id: i,
-    //     first_name: "Jhon",
-    //     last_name: "Oka Jhone",
-    //     username: `jhon_doe${i}`,
-    //     image: "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-    //   };
-    //   temp.push(obj);
-    // }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-    // setTimeout(() => {
-    //   this.setState({
-    //     datas: temp,
-    //     loading: false,
-    //   });
-    // }, 2500);
-
+  function fetchData() {
     axios
       .get("users")
       .then((response) => {
         const { data } = response.data;
-        this.setState({ datas: data });
-        console.log(data);
+        setDatas(data);
+        // console.log(data);
       })
       .catch((error) => {
         console.log(error);
         alert(error.toString());
       })
-      .finally(() => this.setState({ loading: false }));
+      .finally(() => setLoading(false));
   }
 
-  fetchAlter() {
+  function fetchAlter() {
     fetch(
       "https://virtserver.swaggerhub.com/devanada/hells-kitchen/1.1.0/users"
     )
       .then((result) => result.json())
       .then((response) => {
         const { data } = response;
-        this.setState({ datas: data });
-        console.log(data);
+        setDatas(data);
+        // console.log(data);
       })
       .catch((error) => {
         console.log(error);
         alert(error.toString());
       })
-      .finally(() => this.setState({ loading: false }));
+      .finally(() => setLoading(false));
   }
 
-  render() {
-    return (
-      <Layout>
-        <div className="flex flex-col items-center gap-4 w-[85%] w-lg-[80%] h-[90%] overflow-auto">
-          <p className=" text-xl text-slate-900 font-bold tracking-wider mb-5">
-            PROFILES:
-          </p>
-          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 w-full">
-            {this.state.loading ? (
-              <Spinner />
-            ) : (
-              this.state.datas.map((data, idx) => {
-                return (
-                  <Card
-                    key={data.id}
-                    first_name={data.first_name}
-                    last_name={data.last_name}
-                    username={data.username}
-                    image={data.image}
-                  />
-                );
-              })
-            )}
-          </div>
+  return (
+    <Layout>
+      <div className="flex flex-col items-center gap-4 w-[85%] w-lg-[80%] h-[90%] overflow-auto">
+        <p className=" text-xl text-slate-900 font-bold tracking-wider mb-5">
+          PROFILES:
+        </p>
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-3 w-full">
+          {loading ? (
+            <Spinner />
+          ) : (
+            datas.map((data, idx) => {
+              return (
+                <Card
+                  key={data.id}
+                  first_name={data.first_name}
+                  last_name={data.last_name}
+                  username={data.username}
+                  image={data.image}
+                />
+              );
+            })
+          )}
         </div>
-      </Layout>
-    );
-  }
-}
+      </div>
+    </Layout>
+  );
+};
 
 export default Home;

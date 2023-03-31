@@ -1,13 +1,12 @@
-import { Component, FormEvent } from "react";
+import { FC, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 
-import withRouter, { NavigateParam } from "@/utils/navigation";
-import Layout from "@/components/Layout";
 import { UserEdit } from "@/utils/types/user";
+import { useParams } from "react-router-dom";
 import { Input } from "@/components/Input";
+import Layout from "@/components/Layout";
 import Button from "@/components/Button";
-
-interface PropsType extends NavigateParam {}
+import { useTitle } from "@/utils/hooks";
 
 interface StateType {
   data: Partial<UserEdit>;
@@ -17,30 +16,28 @@ interface StateType {
   objSubmit: Partial<UserEdit>;
 }
 
-class Profile extends Component<PropsType, StateType> {
-  constructor(props: PropsType) {
-    super(props);
-    this.state = {
-      objSubmit: {},
-      image: "",
-      data: {},
-      loading: true,
-      isEdit: false,
-    };
-  }
+const Profile: FC = () => {
+  const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
+  const [data, setData] = useState<Partial<UserEdit>>({});
+  const [loading, setLoading] = useState<boolean>(true);
+  const [image, setImage] = useState<string>("");
+  const [isEdit, setisEdit] = useState<boolean>(false);
+  const params = useParams();
+  useTitle("profile: testing | User Management");
 
-  componentDidMount(): void {
-    this.fetchData();
-  }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  fetchData() {
-    const { username } = this.props.params;
+  function fetchData() {
+    const { username: uname } = params;
+
     axios
-      .get(`users/${username}`)
+      .get(`users/${uname}`)
       .then((response) => {
-        // Akan resolve ketika server memberikan response OK ke Frontend
         const { data } = response.data;
-        this.setState({ data: data, image: data.image });
+
+        setData(data);
         // console.log(data);
       })
       .catch((error) => {
@@ -48,21 +45,21 @@ class Profile extends Component<PropsType, StateType> {
         console.log(error);
         alert(error.toString());
       })
-      .finally(() => this.setState({ loading: false }));
+      .finally(() => setLoading(false));
   }
 
-  handleChange(value: string | File, key: keyof typeof this.state.objSubmit) {
-    let temp = { ...this.state.objSubmit };
+  function handleChange(value: string | File, key: keyof typeof objSubmit) {
+    let temp = { ...objSubmit };
     temp[key] = value;
-    this.setState({ objSubmit: temp });
+    setObjSubmit(temp);
   }
 
-  handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData();
-    let key: keyof typeof this.state.objSubmit;
-    for (key in this.state.objSubmit) {
-      formData.append(key, this.state.objSubmit[key]);
+    let key: keyof typeof objSubmit;
+    for (key in objSubmit) {
+      formData.append(key, objSubmit[key]);
     }
     axios
       .put("users", formData, {
@@ -73,101 +70,100 @@ class Profile extends Component<PropsType, StateType> {
       .then((response) => {
         const { data } = response;
         console.log(data);
-        this.setState({ isEdit: false });
+        setisEdit(false);
       })
       .catch((error) => {
         alert(error.toString());
       })
-      .finally(() => this.fetchData());
+      .finally(() => fetchData());
   }
 
-  handleEditMode = () => {
-    this.setState({ isEdit: !this.state.isEdit });
+  const handleEditMode = () => {
+    setisEdit(!isEdit);
   };
 
-  render() {
-    return (
-      <Layout>
-        <div className="w-[70%]">
-          <div className="flex flex-col items-center gap-4 mb-7">
-            <img
-              src={this.state.image}
-              alt={`${this.state.data.username}'s profile picture `}
-              className="w-40 h-40 rounded-full"
-            />
-
-            {this.state.isEdit ? (
-              <form onSubmit={(event) => this.handleSubmit(event)}>
-                <div className="flex flex-col gap-4">
-                  <Input
-                    placeholder="Select Image"
-                    type="file"
-                    onChange={(event) => {
-                      if (!event.currentTarget.files) {
-                        return;
-                      }
-                      this.setState({
-                        image: URL.createObjectURL(
-                          event.currentTarget.files[0]
-                        ),
-                      });
-                      this.handleChange(event.currentTarget.files[0], "image");
-                    }}
-                  />
-                  <div className="flex gap-3">
-                    <Input
-                      placeholder="First Name"
-                      defaultValue={this.state.data.first_name}
-                      onChange={(event) =>
-                        this.handleChange(event.target.value, "first_name")
-                      }
-                    />
-                    <Input
-                      placeholder="Last Name"
-                      defaultValue={this.state.data.last_name}
-                      onChange={(event) =>
-                        this.handleChange(event.target.value, "last_name")
-                      }
-                    />
-                  </div>
-                  <Input
-                    placeholder="Username"
-                    defaultValue={this.state.data.username}
-                    onChange={(event) =>
-                      this.handleChange(event.target.value, "username")
-                    }
-                  />
-                  <Input
-                    placeholder="Password"
-                    defaultValue={this.state.data.password}
-                    onChange={(event) =>
-                      this.handleChange(event.target.value, "password")
-                    }
-                  />
-                  <Button label="Submit" id="button-submit" type="submit" />
-                </div>
-              </form>
-            ) : (
-              <div className="text-center">
-                <p className="text-slate-900 font-semibold tracking-wider">
-                  {this.state.data.first_name} {this.state.data.last_name}
-                </p>
-                <p className="text-slate-900 tracking-wide">
-                  {this.state.data.username}
-                </p>
-              </div>
-            )}
-          </div>
-
-          <Button
-            label="Edit Profile"
-            id="button-edit"
-            onClick={this.handleEditMode}
+  return (
+    <Layout>
+      <div className="w-[70%]">
+        <div className="flex flex-col items-center gap-4 mb-7">
+          <img
+            src={data.image}
+            alt={`${data.username}'s profile picture `}
+            className="w-40 h-40 rounded-full"
+            id="image-profile"
           />
-        </div>
-      </Layout>
-    );
-  }
-}
 
-export default withRouter(Profile);
+          {isEdit ? (
+            <form onSubmit={(event) => handleSubmit(event)}>
+              <div className="flex flex-col gap-4 w-full">
+                <Input
+                  placeholder="Select Image"
+                  type="file"
+                  id="input-fileimage"
+                  onChange={(event) => {
+                    if (!event.currentTarget.files) {
+                      return;
+                    }
+                    setImage(URL.createObjectURL(event.currentTarget.files[0]));
+
+                    handleChange(event.currentTarget.files[0], "image");
+                  }}
+                />
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="First Name"
+                    id="input-firstname"
+                    defaultValue={data.first_name}
+                    onChange={(event) =>
+                      handleChange(event.target.value, "first_name")
+                    }
+                  />
+                  <Input
+                    placeholder="Last Name"
+                    id="input-lastname"
+                    defaultValue={data.last_name}
+                    onChange={(event) =>
+                      handleChange(event.target.value, "last_name")
+                    }
+                  />
+                </div>
+                <Input
+                  placeholder="Username"
+                  id="input-username"
+                  defaultValue={data.username}
+                  onChange={(event) =>
+                    handleChange(event.target.value, "username")
+                  }
+                />
+                <Input
+                  placeholder="Password"
+                  id="input-password"
+                  defaultValue={data.password}
+                  onChange={(event) =>
+                    handleChange(event.target.value, "password")
+                  }
+                />
+                <Button label="Submit" id="button-submit" type="submit" />
+              </div>
+            </form>
+          ) : (
+            <div className="text-center">
+              <p className="text-slate-900 font-semibold tracking-wider">
+                {data.first_name} {data.last_name}
+              </p>
+              <p className="text-slate-900 tracking-wide">{data.username}</p>
+            </div>
+          )}
+        </div>
+
+        <Button
+          label="Edit Profile"
+          id="button-edit"
+          onClick={handleEditMode}
+        />
+      </div>
+    </Layout>
+  );
+};
+
+export default Profile;
