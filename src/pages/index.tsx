@@ -53,7 +53,7 @@ const Home: FC = () => {
   return (
     <Layout>
       <div className="flex flex-col items-center gap-4 w-[85%] w-lg-[80%] h-[90%] overflow-auto">
-        <p className=" text-xl text-slate-900 font-bold tracking-wider mb-5">
+        <p className=" text-xl text-slate-900 dark:text-slate-200 font-bold tracking-wider mb-5 ">
           PROFILES:
         </p>
         <div className="grid gap-4 grid-cols-2 md:grid-cols-3 w-full">

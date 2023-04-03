@@ -1,5 +1,8 @@
-import { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useEffect, useState, useContext } from "react";
+import withReactContent from "sweetalert2-react-content";
 import { Link, useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import { useDispatch } from "react-redux";
 import axios from "axios";
 
 import withRouter, { NavigateParam } from "@/utils/navigation";
@@ -7,6 +10,9 @@ import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
 import Button from "@/components/Button";
 import { useTitle } from "@/utils/hooks";
+import { handleAuth } from "@/utils/redux/reducers/reducer";
+import Swal from "@/utils/swal";
+import { ThemeContexat } from "@/utils/context";
 
 interface PropsType extends NavigateParam {}
 
@@ -26,8 +32,12 @@ const Register: FC = () => {
     last_name: "",
   });
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const navigate = useNavigate();
+  const MySwal = withReactContent(Swal);
   useTitle("Register | User Management");
+  const [, setCookie] = useCookies();
+  const navigate = useNavigate();
+
+  const { theme, setTheme } = useContext(ThemeContexat);
 
   useEffect(() => {
     const isEmpty = Object.values(objSubmit).every((val) => val !== "");
@@ -40,13 +50,32 @@ const Register: FC = () => {
     axios
       .post("register", objSubmit)
       .then((response) => {
-        const { data } = response;
-        alert(data.message);
-        console.log(data);
-        navigate(`/profile/testing`);
+        const { data, message } = response.data;
+        MySwal.fire({
+          title: "Success",
+          text: message,
+          icon: "success",
+          background: theme === "dark" ? "#475569" : "#f1f5f9",
+          color: theme === "dark" ? "#e2e8f0" : "#0f172a",
+          showCancelButton: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setCookie("tkn", data.token);
+            setCookie("uname", data.username);
+            navigate(`/profile/testing`);
+          }
+        });
       })
       .catch((error) => {
-        alert(error.toString());
+        const { data } = error.response;
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+          icon: "error",
+          background: theme === "dark" ? "#475569" : "#f1f5f9",
+          color: theme === "dark" ? "#e2e8f0" : "#0f172a",
+        });
       })
       .finally(() => setIsDisabled(false));
   }
@@ -58,7 +87,7 @@ const Register: FC = () => {
         onSubmit={(event) => handleSubmit(event)}
       >
         <img src="/vite.svg" alt="image register" className="w-20 h-20" />
-        <p className=" text-xl text-slate-900 font-bold tracking-wide mb-7">
+        <p className=" text-xl text-slate-900 dark:text-slate-200 font-bold tracking-wide mb-7">
           Create your account
         </p>
         <div className="flex gap-4 w-full">
@@ -105,16 +134,3 @@ const Register: FC = () => {
 };
 
 export default Register;
-
-// <Layout>
-//   <form className="flex flex-col items-center justify-center gap-4 ">
-//     <img src="/vite.svg" alt="image login" className="w-28 h-28" />
-//     <Input placeholder="First Name" id="input-firstname" />
-//     <Input placeholder="Last Name" id="input-lastname" />
-
-//     <Input placeholder="Username" id="input-uname" />
-//     <Input placeholder="Password" id="input-password" type="password" />
-//     <Input placeholder="Re Type Password" id="input-password" type="password" />
-//     <Button label="Login" id="button-login" />
-//   </form>
-// </Layout>

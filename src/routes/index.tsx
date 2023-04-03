@@ -1,18 +1,33 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-
-import { FC } from "react";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
+import { FC, useState, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useCookies } from "react-cookie";
 import axios from "axios";
 
-import Home from "@/pages";
-import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
-import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
+import Login from "@/pages/auth/Login";
+import Profile from "@/pages/Profile";
+import Home from "@/pages";
+
+import { handleAuth } from "@/utils/redux/reducers/reducer";
+import { ThemeContexat } from "@/utils/context";
 
 axios.defaults.baseURL =
   "https://virtserver.swaggerhub.com/devanada/hells-kitchen/1.1.0";
 
 const Router: FC = () => {
+  const [theme, setTheme] = useState<string>("light");
+  const background = useMemo(() => ({ theme, setTheme }), [theme]);
+
+  const [cookie] = useCookies(["tkn", "uname"]);
+  const dispatch = useDispatch();
+  const checkToken = cookie.tkn;
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -21,12 +36,12 @@ const Router: FC = () => {
     },
     {
       path: "/login",
-      element: <Login />,
+      element: checkToken ? <Navigate to="/" /> : <Login />,
       errorElement: <NotFound />,
     },
     {
       path: "/register",
-      element: <Register />,
+      element: checkToken ? <Navigate to="/" /> : <Register />,
       errorElement: <NotFound />,
     },
     {
@@ -36,7 +51,27 @@ const Router: FC = () => {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  useEffect(() => {
+    if (cookie.tkn) {
+      dispatch(handleAuth({ isLoggedIn: true, uname: cookie.uname }));
+    } else {
+      dispatch(handleAuth({ isLoggedIn: false, uname: "" }));
+    }
+  }, [cookie]);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [theme]);
+
+  return (
+    <ThemeContexat.Provider value={background}>
+      <RouterProvider router={router} />
+    </ThemeContexat.Provider>
+  );
 };
 
 export default Router;

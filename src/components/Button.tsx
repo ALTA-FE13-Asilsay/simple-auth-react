@@ -10,7 +10,7 @@ const Button: FC<Props> = (props) => {
   return (
     <button
       className="bg-sky-700 text-slate-200 font-bold py-2 px-8 w-full
-    rounded-lg border border-white hover:bg-sky-600 active:bg-sky-800 disabled:bg-sky-900"
+    rounded-lg border border-white dark:border-slate-600 hover:bg-sky-600 active:bg-sky-800 disabled:bg-sky-900"
       {...props}
     >
       {label}

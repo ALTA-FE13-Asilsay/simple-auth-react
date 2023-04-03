@@ -12,20 +12,20 @@ const Card: FC<Props> = (props) => {
   const { image, username, first_name, last_name } = props;
 
   return (
-    <div className="flex flex-col items-center border-2 border-slate-50 rounded-lg p-2">
+    <div className="flex flex-col items-center border-2 border-slate-50 dark:border-slate-600 rounded-lg p-2">
       <img
         src={image}
         alt={`${username}'s picture`}
         className="rounded-full w-20 aspect-square mb-3"
       />
       <Link
-        className="font-semibold tracking-wide text-slate-900"
+        className="font-semibold tracking-wide text-slate-900 dark:text-slate-200"
         to={`profile/${username}`}
         id="nav-profile"
       >
         {first_name} {last_name}
       </Link>
-      <p className="text-sm text-slate-900">{username}</p>
+      <p className="text-sm text-slate-900 dark:text-slate-200">{username}</p>
     </div>
   );
 };

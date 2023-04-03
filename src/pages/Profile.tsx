@@ -95,7 +95,7 @@ const Profile: FC = () => {
 
           {isEdit ? (
             <form onSubmit={(event) => handleSubmit(event)}>
-              <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col gap-3 w-full h-full">
                 <Input
                   placeholder="Select Image"
                   type="file"
@@ -109,7 +109,7 @@ const Profile: FC = () => {
                     handleChange(event.currentTarget.files[0], "image");
                   }}
                 />
-                <div className="flex gap-3">
+                <div className="flex gap-2">
                   <Input
                     placeholder="First Name"
                     id="input-firstname"
@@ -148,10 +148,12 @@ const Profile: FC = () => {
             </form>
           ) : (
             <div className="text-center">
-              <p className="text-slate-900 font-semibold tracking-wider">
+              <p className="text-slate-900 dark:text-slate-200 font-semibold tracking-wider">
                 {data.first_name} {data.last_name}
               </p>
-              <p className="text-slate-900 tracking-wide">{data.username}</p>
+              <p className="text-slate-900 dark:text-slate-200 tracking-wide">
+                {data.username}
+              </p>
             </div>
           )}
         </div>
