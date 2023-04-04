@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useState } from "react";
 
 export function useTitle(title: string) {
   useEffect(() => {
@@ -8,4 +9,20 @@ export function useTitle(title: string) {
       document.title = pervTitle;
     };
   });
+}
+
+export function useFetchGet(url: string) {
+  const [data, setData] = useState<any>({});
+
+  useEffect(() => {
+    fetchData();
+  }, [url]);
+
+  function fetchData() {
+    fetch(url)
+      .then((result) => result.json())
+      .then((response) => setData(response));
+  }
+
+  return [data];
 }

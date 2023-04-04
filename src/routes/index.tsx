@@ -17,8 +17,7 @@ import Home from "@/pages";
 import { handleAuth } from "@/utils/redux/reducers/reducer";
 import { ThemeContexat } from "@/utils/context";
 
-axios.defaults.baseURL =
-  "https://virtserver.swaggerhub.com/devanada/hells-kitchen/1.1.0";
+axios.defaults.baseURL = "https://hells-kitchen.onrender.com/api/v1";
 
 const Router: FC = () => {
   const [theme, setTheme] = useState<string>("light");
@@ -26,7 +25,7 @@ const Router: FC = () => {
 
   const [cookie] = useCookies(["tkn", "uname"]);
   const dispatch = useDispatch();
-  const checkToken = cookie.tkn;
+  const getToken = cookie.tkn;
 
   const router = createBrowserRouter([
     {
@@ -36,12 +35,12 @@ const Router: FC = () => {
     },
     {
       path: "/login",
-      element: checkToken ? <Navigate to="/" /> : <Login />,
+      element: getToken ? <Navigate to="/" /> : <Login />,
       errorElement: <NotFound />,
     },
     {
       path: "/register",
-      element: checkToken ? <Navigate to="/" /> : <Register />,
+      element: getToken ? <Navigate to="/" /> : <Register />,
       errorElement: <NotFound />,
     },
     {
@@ -52,10 +51,12 @@ const Router: FC = () => {
   ]);
 
   useEffect(() => {
-    if (cookie.tkn) {
-      dispatch(handleAuth({ isLoggedIn: true, uname: cookie.uname }));
+    if (getToken) {
+      dispatch(
+        handleAuth({ isLoggedIn: true, uname: cookie.uname, token: getToken })
+      );
     } else {
-      dispatch(handleAuth({ isLoggedIn: false, uname: "" }));
+      dispatch(handleAuth({ isLoggedIn: false, uname: "", token: "" }));
     }
   }, [cookie]);
 

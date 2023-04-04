@@ -1,12 +1,17 @@
 import { FC, FormEvent, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import withReactContent from "sweetalert2-react-content";
+import { useCookies } from "react-cookie";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
+import { RootState } from "@/utils/types/redux";
 import { UserEdit } from "@/utils/types/user";
-import { useParams } from "react-router-dom";
 import { Input } from "@/components/Input";
 import Layout from "@/components/Layout";
 import Button from "@/components/Button";
 import { useTitle } from "@/utils/hooks";
+import Swal from "@/utils/swal";
 
 interface StateType {
   data: Partial<UserEdit>;
@@ -17,13 +22,17 @@ interface StateType {
 }
 
 const Profile: FC = () => {
+  const { token, uname } = useSelector((state: RootState) => state.data);
+
   const [objSubmit, setObjSubmit] = useState<Partial<UserEdit>>({});
   const [data, setData] = useState<Partial<UserEdit>>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [image, setImage] = useState<string>("");
-  const [isEdit, setisEdit] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const params = useParams();
-  useTitle("profile: testing | User Management");
+  const MySwal = withReactContent(Swal);
+  const [, , removeCookie] = useCookies();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -36,13 +45,10 @@ const Profile: FC = () => {
       .get(`users/${uname}`)
       .then((response) => {
         const { data } = response.data;
-
+        document.title = `${data.username} | User Management`;
         setData(data);
-        // console.log(data);
       })
       .catch((error) => {
-        // Akan reject ketika server memberikan response failed ke Frontend
-        console.log(error);
         alert(error.toString());
       })
       .finally(() => setLoading(false));
@@ -65,21 +71,62 @@ const Profile: FC = () => {
       .put("users", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        const { data } = response;
-        console.log(data);
-        setisEdit(false);
+        const { message } = response.data;
+        MySwal.fire({
+          title: "Success",
+          text: message,
+          icon: "success",
+          showCancelButton: false,
+        });
+        setObjSubmit({});
+        setIsEdit(false);
       })
       .catch((error) => {
-        alert(error.toString());
+        const { data } = error.response;
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+          icon: "error",
+        });
       })
       .finally(() => fetchData());
   }
 
-  const handleEditMode = () => {
-    setisEdit(!isEdit);
+  const handleDeleteAccount = () => {
+    axios
+      .delete("/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        const { message } = response.data;
+        MySwal.fire({
+          title: "Delete Account",
+          text: "Are you sure?",
+          icon: "warning",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            removeCookie("tkn");
+            removeCookie("uname");
+            navigate("/");
+          }
+        });
+      })
+      .catch((error) => {
+        const { data } = error.response;
+        MySwal.fire({
+          title: "Failed",
+          text: data.message,
+          showCancelButton: false,
+          icon: "error",
+        });
+      });
   };
 
   return (
@@ -128,14 +175,6 @@ const Profile: FC = () => {
                   />
                 </div>
                 <Input
-                  placeholder="Username"
-                  id="input-username"
-                  defaultValue={data.username}
-                  onChange={(event) =>
-                    handleChange(event.target.value, "username")
-                  }
-                />
-                <Input
                   placeholder="Password"
                   id="input-password"
                   defaultValue={data.password}
@@ -158,11 +197,20 @@ const Profile: FC = () => {
           )}
         </div>
 
-        <Button
-          label="Edit Profile"
-          id="button-edit"
-          onClick={handleEditMode}
-        />
+        {uname === params.username && (
+          <>
+            <Button
+              label="Edit Profile"
+              id="button-edit"
+              onClick={() => setIsEdit(!isEdit)}
+            />
+            <Button
+              label="Delete Account"
+              id="button-delete"
+              onClick={() => handleDeleteAccount()}
+            />
+          </>
+        )}
       </div>
     </Layout>
   );

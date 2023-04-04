@@ -5,12 +5,14 @@ import {
   Params,
 } from "react-router-dom";
 
+import { FC } from "react";
+
 export interface NavigateParam {
   navigate: NavigateFunction;
   params: Readonly<Params<string>>;
 }
 
-const withROuter = (Component: any) => {
+const withROuter = (Component: FC) => {
   const Wrapper = (props: any) => {
     const navigate = useNavigate();
     const params = useParams();

@@ -60,9 +60,7 @@ const Register: FC = () => {
           showCancelButton: false,
         }).then((result) => {
           if (result.isConfirmed) {
-            setCookie("tkn", data.token);
-            setCookie("uname", data.username);
-            navigate(`/profile/testing`);
+            navigate("/login");
           }
         });
       })
